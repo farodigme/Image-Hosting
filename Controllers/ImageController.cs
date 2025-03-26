@@ -1,12 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ImageHosting.Models.DTOs.Upload;
+using ImageHosting.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ImageHosting.Controllers
 {
+	[ApiController]
+	[Route("api/{controller}")]
 	public class ImageController : Controller
 	{
-		public async Task<IActionResult> Upload()
+		private ImageService _imageService;
+
+		public ImageController(ImageService imageService)
 		{
-			return View();
+			_imageService = imageService;
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Upload(ImageUploadRequest request)
+		{
+			var result = await _imageService.UploadImageAsync(request);
+			return result.Success ? Ok(result) : BadRequest(result);
 		}
 	}
 }
