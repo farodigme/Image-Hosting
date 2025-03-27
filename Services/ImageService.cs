@@ -1,5 +1,6 @@
 ﻿using ImageHosting.Models.DTOs.Upload;
 using ImageHosting.Models.Entities;
+using SixLabors.ImageSharp;
 using System.ComponentModel.DataAnnotations;
 
 namespace ImageHosting.Services
@@ -27,22 +28,26 @@ namespace ImageHosting.Services
 				};
 			}
 
-			Guid guid = Guid.NewGuid();
+			var guid = Guid.NewGuid().ToString();
+			var folder = guid.Split('-')[0]; 
+			var folderPath = Path.Combine("var", "www", "images", folder);
+			Directory.CreateDirectory(folderPath);
 
-			string path = "Images/" + guid.ToString();
-			
-			using (var fileStream = new FileStream(path, FileMode.Create))
+			var fileName = guid + ".jpg";
+			var fullPath = Path.Combine(folderPath, fileName);
+
+			using (var image = await SixLabors.ImageSharp.Image.LoadAsync(request.ImageFile.OpenReadStream()))
 			{
-				await request.ImageFile.CopyToAsync(fileStream);
+				await image.SaveAsJpegAsync(fullPath);
 			}
 
-			var newImage = new Image()
+			var newImage = new Models.Entities.Storage()
 			{
 				Guid = guid.ToString(),
-				Path = path,
+				Path = fullPath,
 			};
 
-			await _context.Images.AddAsync(newImage);
+			await _context.Storage.AddAsync(newImage);
 			await _context.SaveChangesAsync();
 
 			return new ImageUploadResponse()

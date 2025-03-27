@@ -15,7 +15,7 @@ namespace ImageHosting.Controllers
 			_imageService = imageService;
 		}
 
-		[HttpPost]
+		[HttpPost("upload")]
 		public async Task<IActionResult> Upload(ImageUploadRequest request)
 		{
 			var result = await _imageService.UploadImageAsync(request);

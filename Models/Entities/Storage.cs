@@ -1,6 +1,6 @@
 ﻿namespace ImageHosting.Models.Entities
 {
-	public class Image
+	public class Storage
 	{
 		public int Id { get; set; }
 		public string Guid { get; set; }
