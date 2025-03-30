@@ -16,10 +16,17 @@ namespace ImageHosting.Controllers
 		}
 
 		[HttpPost("upload")]
-		public async Task<IActionResult> Upload(ImageUploadRequest request)
+		public async Task<IActionResult> Upload([FromForm] ImageUploadRequest request)
 		{
 			var result = await _imageService.UploadImageAsync(request);
 			return result.Success ? Ok(result) : BadRequest(result);
+		}
+
+		[HttpGet("get/{guid}")]
+		public async Task<IActionResult> Get([FromRoute] string guid)
+		{
+			var stream = await _imageService.GetImageStreamAsync(guid);
+			return stream != null ? File(stream, "image/jpeg") : BadRequest();
 		}
 	}
 }
