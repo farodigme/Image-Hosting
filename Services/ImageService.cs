@@ -23,7 +23,7 @@ namespace ImageHosting.Services
 
 		public async Task<ImageUploadResponse> UploadImageAsync(ImageUploadRequest request)
 		{
-			var validation = await _validator.ValidateAsync(request.ImageFile, new Models.Settings.ImageValidationSettings());
+			var validation = await _validator.ValidateAsync(request.Image, new Models.Settings.ImageValidationSettings());
 
 			if (!validation.IsValid)
 			{
@@ -42,11 +42,11 @@ namespace ImageHosting.Services
 			var fileName = guid + ".jpg";
 			var fullPath = Path.Combine(folderPath, fileName);
 
-			using (var image = await SixLabors.ImageSharp.Image.LoadAsync(request.ImageFile.OpenReadStream()))
+			using (var image = await SixLabors.ImageSharp.Image.LoadAsync(request.Image.OpenReadStream()))
 			{
 				await image.SaveAsJpegAsync(fullPath);
 			}
-
+			
 			var newImage = new Models.Entities.Storage()
 			{
 				Guid = guid.ToString(),
