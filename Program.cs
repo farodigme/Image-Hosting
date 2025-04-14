@@ -1,3 +1,4 @@
+using ImageHosting.Interfaces;
 using ImageHosting.Models.Entities;
 using ImageHosting.Models.Settings;
 using ImageHosting.Services;
@@ -21,23 +22,17 @@ namespace ImageHosting
 					);
 			});
 
+			builder.Services.AddControllers();
 			builder.Services.AddScoped<ImageService>();
 			builder.Services.AddSingleton<ImageValidator>();
-
-			builder.Services.AddControllers();
+			builder.Services.AddHttpContextAccessor();
+			builder.Services.AddScoped<IUrlService, UrlService>();
 
 			builder.Services.Configure<ImageValidationSettings>(builder.Configuration.GetSection("ImageValidation"));
 
 			var app = builder.Build();
 
-			//app.UseStaticFiles(new StaticFileOptions
-			//{
-			//	FileProvider = new PhysicalFileProvider(Environment.CurrentDirectory + "/var/www/images"),
-			//	RequestPath = "/img"
-			//});
-
 			app.MapControllers();
-
 			app.Run();
 		}
 	}
