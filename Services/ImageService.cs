@@ -1,4 +1,5 @@
-﻿using ImageHosting.Models.DTOs.Upload;
+﻿using ImageHosting.Interfaces;
+using ImageHosting.Models.DTOs.Upload;
 using ImageHosting.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
@@ -15,10 +16,12 @@ namespace ImageHosting.Services
 	{
 		private ApplicationContext _context;
 		private ImageValidator _validator;
-		public ImageService(ApplicationContext context, ImageValidator validator)
+		private IUrlService _urlService;
+		public ImageService(ApplicationContext context, ImageValidator validator, IUrlService urlService)
 		{
 			_context = context;
 			_validator = validator;
+			_urlService = urlService;
 		}
 
 		public async Task<ImageUploadResponse> UploadImageAsync(ImageUploadRequest request)
@@ -59,8 +62,8 @@ namespace ImageHosting.Services
 			return new ImageUploadResponse()
 			{
 				Success = true,
-				NativeImageUrl = newImage.Guid,
-				ThumbnailImageUrl = newImage.Guid + "_thumb"
+				NativeImageUrl = _urlService.GetImageUrl(newImage.Guid),
+				ThumbnailImageUrl = _urlService.GetImageUrl(newImage.Guid + "_thumb") 
 			};
 		}
 
